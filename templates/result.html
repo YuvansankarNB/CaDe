@@ -52,51 +52,6 @@
 <div class="container">
   <h1 class="text-center mb-4">🔍 Scan Results for <strong>{{ domain }}</strong></h1>
 
-  <!-- Security Score Card -->
-  {% if security_score %}
-  <div class="card shadow mb-4 text-center border-0" style="border-top: 5px solid {{ security_score.color_hex }} !important;">
-    <div class="card-body p-4">
-      <div class="row align-items-center">
-        <div class="col-md-4 border-end">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle text-white shadow-sm mb-2" 
-               style="width: 90px; height: 90px; background-color: {{ security_score.color_hex }}; font-size: 2.2rem; font-weight: bold;">
-            {{ security_score.grade }}
-          </div>
-          <h3 class="mb-0 mt-1" style="color: {{ security_score.color_hex }};">{{ security_score.score }} / 100</h3>
-          <small class="text-muted fw-bold">Overall Security Score</small>
-        </div>
-        <div class="col-md-8 text-start ps-md-4 mt-3 mt-md-0">
-          <h4 class="fw-bold mb-1" style="color: {{ security_score.color_hex }};">
-            <i class="fas fa-shield-halved me-2"></i> {{ security_score.status }}
-          </h4>
-          <p class="text-muted mb-2">Automated security posture evaluation based on header policies, open ports, and endpoint exposure.</p>
-          
-          <div class="progress mb-3" style="height: 12px;">
-            <div class="progress-bar" role="progressbar" 
-                 style="width: {{ security_score.score }}%; background-color: {{ security_score.color_hex }};" 
-                 aria-valuenow="{{ security_score.score }}" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
-
-          {% if security_score.deductions %}
-          <div class="mt-2">
-            <span class="badge bg-danger me-1">Identified Risk Factors:</span>
-            <ul class="mb-0 mt-1 text-danger small ps-3">
-              {% for item in security_score.deductions %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          {% else %}
-          <div class="text-success small fw-bold mt-1">
-            <i class="fas fa-check-circle me-1"></i> No major security warnings or missing security headers identified!
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-
   {% if results.whois %}
   <div class="card shadow">
     <div class="card-header bg-dark text-white">

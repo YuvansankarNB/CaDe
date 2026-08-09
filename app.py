@@ -23,72 +23,6 @@ def clean_whois_data(data):
         return {k: clean_whois_data(v) for k, v in data.items()}
     return data
 
-def calculate_security_score(results):
-    score = 100
-    deductions = []
-    
-    # 1. HTTP Security Headers
-    headers = results.get('headers')
-    if isinstance(headers, dict) and 'error' not in headers:
-        missing_headers = [h for h, v in headers.items() if v == 'Missing']
-        if missing_headers:
-            loss = len(missing_headers) * 7
-            score -= loss
-            deductions.append(f"Missing {len(missing_headers)} security headers (-{loss} pts)")
-            
-    # 2. Vulnerability & Path Checks
-    vulns = results.get('vulnerabilities')
-    if isinstance(vulns, list):
-        exposed = [v for v in vulns if isinstance(v, dict) and v.get('found')]
-        if exposed:
-            loss = len(exposed) * 15
-            score -= loss
-            paths_str = ", ".join([v.get('path', '') for v in exposed])
-            deductions.append(f"Exposed sensitive endpoints ({paths_str}) (-{loss} pts)")
-
-    # 3. Port Scan
-    ports = results.get('ports')
-    if isinstance(ports, list):
-        risky_ports = [p for p in ports if isinstance(p, dict) and p.get('status') == 'Open' and p.get('port') not in [80, 443]]
-        if risky_ports:
-            loss = len(risky_ports) * 10
-            score -= loss
-            ports_str = ", ".join([f"{p.get('port')} ({p.get('service')})" for p in risky_ports])
-            deductions.append(f"Unnecessary open ports ({ports_str}) (-{loss} pts)")
-
-    # Ensure score stays between 0 and 100
-    score = max(0, min(100, score))
-    
-    # Assign Grade and Status
-    if score >= 90:
-        grade = "A+"
-        status = "Excellent Security Posture"
-        color_hex = "#28a745"
-    elif score >= 80:
-        grade = "A"
-        status = "Strong Security Posture"
-        color_hex = "#20c997"
-    elif score >= 70:
-        grade = "B"
-        status = "Moderate Security - Minor Warnings"
-        color_hex = "#ffc107"
-    elif score >= 50:
-        grade = "C"
-        status = "Needs Improvement - Security Risks Found"
-        color_hex = "#fd7e14"
-    else:
-        grade = "F"
-        status = "Critical Risk - Immediate Action Required"
-        color_hex = "#dc3545"
-
-    return {
-        "score": score,
-        "grade": grade,
-        "status": status,
-        "color_hex": color_hex,
-        "deductions": deductions
-    }
-
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
@@ -157,9 +91,12 @@ def scan():
         except Exception as e:
             results['fingerprint'] = {"error": str(e)}
 
-    security_score = calculate_security_score(results)
+    return render_template('result.html', domain=domain, results=results)
 
-    return render_template('result.html', domain=domain, results=results, security_score=security_score)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 
 
