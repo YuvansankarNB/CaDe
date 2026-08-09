@@ -97,71 +97,90 @@
   </div>
   {% endif %}
 
-<div class="card shadow">
-  <div class="card-header bg-dark text-white">
-    <i class="fas fa-id-card"></i> WHOIS Information
-  </div>
-  <div class="card-body">
-    <div class="row">
-      {% if results.whois.domain_name %}
-      <div class="col-md-6 mb-3">
-        <strong>Domain:</strong> {{ results.whois.domain_name }}
-      </div>
-      {% endif %}
-      {% if results.whois.registrar %}
-      <div class="col-md-6 mb-3">
-        <strong>Registrar:</strong> {{ results.whois.registrar }}
-      </div>
-      {% endif %}
-      {% if results.whois.creation_date %}
-      <div class="col-md-6 mb-3">
-        <strong>Created On:</strong> {{ results.whois.creation_date }}
-      </div>
-      {% endif %}
-      {% if results.whois.expiration_date %}
-      <div class="col-md-6 mb-3">
-        <strong>Expires On:</strong> {{ results.whois.expiration_date }}
-      </div>
-      {% endif %}
-      {% if results.whois.updated_date %}
-      <div class="col-md-6 mb-3">
-        <strong>Last Updated:</strong> {{ results.whois.updated_date }}
-      </div>
-      {% endif %}
-      {% if results.whois.name_servers %}
-      <div class="col-md-6 mb-3">
-        <strong>Name Servers:</strong>
-        <ul class="mb-0">
-          {% for ns in results.whois.name_servers %}
-            <li>{{ ns }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-      {% if results.whois.status %}
-      <div class="col-md-6 mb-3">
-        <strong>Status:</strong>
-        <ul class="mb-0">
-          {% for status in results.whois.status %}
-            <li>{{ status }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-      {% if results.whois.emails %}
-      <div class="col-md-6 mb-3">
-        <strong>Contact Emails:</strong>
-        <ul class="mb-0">
-          {% for email in results.whois.emails %}
-            <li>{{ email }}</li>
-          {% endfor %}
-        </ul>
-      </div>
+  {% if results.whois %}
+  <div class="card shadow">
+    <div class="card-header bg-dark text-white">
+      <i class="fas fa-id-card"></i> WHOIS Information
+    </div>
+    <div class="card-body">
+      {% if results.whois is mapping and results.whois.error %}
+        <div class="alert alert-warning mb-0">{{ results.whois.error }}</div>
+      {% elif results.whois is string %}
+        <div class="alert alert-warning mb-0">{{ results.whois }}</div>
+      {% else %}
+        <div class="row">
+          {% if results.whois.domain_name %}
+          <div class="col-md-6 mb-3">
+            <strong>Domain:</strong> {{ results.whois.domain_name }}
+          </div>
+          {% endif %}
+          {% if results.whois.registrar %}
+          <div class="col-md-6 mb-3">
+            <strong>Registrar:</strong> {{ results.whois.registrar }}
+          </div>
+          {% endif %}
+          {% if results.whois.creation_date %}
+          <div class="col-md-6 mb-3">
+            <strong>Created On:</strong> {{ results.whois.creation_date }}
+          </div>
+          {% endif %}
+          {% if results.whois.expiration_date %}
+          <div class="col-md-6 mb-3">
+            <strong>Expires On:</strong> {{ results.whois.expiration_date }}
+          </div>
+          {% endif %}
+          {% if results.whois.updated_date %}
+          <div class="col-md-6 mb-3">
+            <strong>Last Updated:</strong> {{ results.whois.updated_date }}
+          </div>
+          {% endif %}
+          {% if results.whois.name_servers %}
+          <div class="col-md-6 mb-3">
+            <strong>Name Servers:</strong>
+            {% if results.whois.name_servers is string %}
+              <div>{{ results.whois.name_servers }}</div>
+            {% else %}
+              <ul class="mb-0">
+                {% for ns in results.whois.name_servers %}
+                  <li>{{ ns }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if results.whois.status %}
+          <div class="col-md-6 mb-3">
+            <strong>Status:</strong>
+            {% if results.whois.status is string %}
+              <div>{{ results.whois.status }}</div>
+            {% else %}
+              <ul class="mb-0">
+                {% for status in results.whois.status %}
+                  <li>{{ status }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+          {% if results.whois.emails %}
+          <div class="col-md-6 mb-3">
+            <strong>Contact Emails:</strong>
+            {% if results.whois.emails is string %}
+              <div>{{ results.whois.emails }}</div>
+            {% else %}
+              <ul class="mb-0">
+                {% for email in results.whois.emails %}
+                  <li>{{ email }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
       {% endif %}
     </div>
   </div>
-</div>
-{% endif %}
+  {% endif %}
 
 
 
