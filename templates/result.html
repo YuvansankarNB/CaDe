@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scan Results for {{ domain }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 2rem 1rem;
+    }
+    h1, h2, h3, h4 {
+      margin-bottom: 1rem;
+    }
+    .card + .card {
+      margin-top: 1.5rem;
+    }
+    pre {
+      background-color: #efefef;
+      padding: 1rem;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    .badge-open {
+      background-color: #28a745;
+    }
+    .badge-closed {
+      background-color: #dc3545;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background-color: #fff;
+        padding: 0;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1 class="text-center mb-4">🔍 Scan Results for <strong>{{ domain }}</strong></h1>
+
+  {% if results.whois %}
+<div class="card shadow">
+  <div class="card-header bg-dark text-white">
+    <i class="fas fa-id-card"></i> WHOIS Information
+  </div>
+  <div class="card-body">
+    <div class="row">
+      {% if results.whois.domain_name %}
+      <div class="col-md-6 mb-3">
+        <strong>Domain:</strong> {{ results.whois.domain_name }}
+      </div>
+      {% endif %}
+      {% if results.whois.registrar %}
+      <div class="col-md-6 mb-3">
+        <strong>Registrar:</strong> {{ results.whois.registrar }}
+      </div>
+      {% endif %}
+      {% if results.whois.creation_date %}
+      <div class="col-md-6 mb-3">
+        <strong>Created On:</strong> {{ results.whois.creation_date }}
+      </div>
+      {% endif %}
+      {% if results.whois.expiration_date %}
+      <div class="col-md-6 mb-3">
+        <strong>Expires On:</strong> {{ results.whois.expiration_date }}
+      </div>
+      {% endif %}
+      {% if results.whois.updated_date %}
+      <div class="col-md-6 mb-3">
+        <strong>Last Updated:</strong> {{ results.whois.updated_date }}
+      </div>
+      {% endif %}
+      {% if results.whois.name_servers %}
+      <div class="col-md-6 mb-3">
+        <strong>Name Servers:</strong>
+        <ul class="mb-0">
+          {% for ns in results.whois.name_servers %}
+            <li>{{ ns }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% if results.whois.status %}
+      <div class="col-md-6 mb-3">
+        <strong>Status:</strong>
+        <ul class="mb-0">
+          {% for status in results.whois.status %}
+            <li>{{ status }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% if results.whois.emails %}
+      <div class="col-md-6 mb-3">
+        <strong>Contact Emails:</strong>
+        <ul class="mb-0">
+          {% for email in results.whois.emails %}
+            <li>{{ email }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+  {% if results.ports %}
+  <div class="card shadow">
+    <div class="card-header bg-primary text-white">
+      <i class="fas fa-network-wired"></i> Port Scan
+    </div>
+    <div class="card-body">
+      <table class="table table-hover text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Port</th>
+            <th>Service</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in results.ports %}
+          <tr>
+            <td>{{ entry.port }}</td>
+            <td>{{ entry.service }}</td>
+            <td>
+              <span class="badge {{ 'badge-open' if entry.status == 'Open' else 'badge-closed' }}">
+                {{ entry.status }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if results.subdomains %}
+  <div class="card shadow">
+    <div class="card-header bg-info text-white">
+      <i class="fas fa-sitemap"></i> Subdomains Found
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for entry in results.subdomains %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ entry.subdomain }}
+          <span class="badge bg-secondary">{{ entry.ip }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if results.headers %}
+  <div class="card shadow">
+    <div class="card-header bg-warning text-dark">
+      <i class="fas fa-lock"></i> HTTP Headers
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for key, value in results.headers.items() %}
+        <li class="list-group-item">
+          <strong>{{ key }}</strong>: {{ value }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  
+  {% if results.vulnerabilities %}
+  <div class="card shadow">
+    <div class="card-header bg-danger text-white">
+      <i class="fas fa-bug"></i> Vulnerability Check
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for entry in results.vulnerabilities %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>{{ entry.path }}</span>
+          {% if entry.found %}
+            <span class="text-success"><i class="fas fa-check-circle"></i> Found ({{ entry.status }})</span>
+          {% else %}
+            <span class="text-muted"><i class="fas fa-times-circle"></i> Not Found</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if results.fingerprint %}
+  <div class="card shadow">
+    <div class="card-header bg-secondary text-white">
+      <i class="fas fa-cogs"></i> Tech Stack Fingerprinting
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        {% for key, value in results.fingerprint.items() %}
+        <li class="list-group-item">
+          <strong>{{ key }}</strong>: {{ value }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="text-center mt-5 mb-4">
+    <a href="/" class="btn btn-outline-primary btn-lg">
+      <i class="fas fa-redo-alt"></i> Run Another Scan
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
